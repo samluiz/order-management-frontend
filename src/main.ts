@@ -23,8 +23,8 @@ app.use(VueQueryPlugin)
 try {
     const authStore = useAuthStore()
     await authStore.refreshToken()
-} catch {
-    console.log("No token found")
+} catch (err) {
+    console.log(err)
 }
 
 app.mount('#app')

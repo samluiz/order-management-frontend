@@ -29,15 +29,27 @@ export const useAuthStore = defineStore('auth', () => {
 
     const refreshToken = async () => {
         const localTokens = getTokens()
-        if (localTokens.token != null || localTokens.refresh_token != null) {
-            tokens.value = localTokens
+        
+        if (localTokens.refresh_token) {
+            tokens.value = localTokens as AuthTokens
+            const isRefTokenExp = isRefreshTokenExpired()
+            if (isRefTokenExp) {
+                console.log('Refresh token expired')
+                logout()
+                return
+            }
         } else {
-            const tokenResponse = await refresh({ refresh_token: tokens.value?.refresh_token! })
-            tokens.value = tokenResponse
+            console.log('No token found')
+            logout()
+            return
         }
+
+        const tokenResponse = await refresh({ refresh_token: tokens.value?.refresh_token! })
+        tokens.value = tokenResponse
         localStorage.setItem('token', tokens.value.token)
         localStorage.setItem('refresh_token', tokens.value.refresh_token)
         
+
         if (user.value === null) {
             setUser()
         }
@@ -54,12 +66,21 @@ export const useAuthStore = defineStore('auth', () => {
         router.push('/login')
     }
 
+    const isRefreshTokenExpired = () => {
+        if (tokens.value === null) {
+            return true
+        }
+
+        const decodedToken = jwtDecode(tokens.value.refresh_token)
+        return decodedToken.exp! * 1000 < Date.now()
+    }
+
     const startRefreshTokenTimer = () => {
         const decodedToken = jwtDecode(tokens.value?.token!)
         const expires = new Date(decodedToken.exp! * 1000)
         const timeout = expires.getTime() - Date.now() - (60 * 1000)
 
-        refreshTokenTimeout.value = setTimeout(tokens.value?.refresh_token!, timeout)
+        refreshTokenTimeout.value = setTimeout(refreshToken, timeout)
     }
 
     const stopRefreshTokenTimer = () => {

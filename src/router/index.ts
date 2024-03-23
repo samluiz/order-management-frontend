@@ -27,8 +27,8 @@ const router = createRouter({
       }
     },
     {
-      path: '/dashboard/orders',
-      name: 'orders',
+      path: '/dashboard/pedidos',
+      name: 'pedidos',
       component: lazyLoad('Orders'),
       meta: {
         requiresAuth: true,
@@ -36,8 +36,8 @@ const router = createRouter({
       }
     },
     {
-      path: '/dashboard/products',
-      name: 'products',
+      path: '/dashboard/produtos',
+      name: 'produtos',
       component: lazyLoad('Products'),
       meta: {
         requiresAuth: true,

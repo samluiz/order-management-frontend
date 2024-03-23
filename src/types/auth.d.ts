@@ -8,6 +8,6 @@ export interface AuthTokens {
     refresh_token: string
 }
 
-export interface refresh_tokenRequest {
+export interface refreshTokenRequest {
     refresh_token: string | null
 }
